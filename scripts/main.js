@@ -9,7 +9,7 @@ var Backbone = require('backparse')({
 
 var App = Backbone.Router.extend({
 	routes:{
-		'': 		'home',
+		'': 		'register',
 		'login':    'login',
 		'register':  'register'
 	},
