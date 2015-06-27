@@ -63,16 +63,19 @@ module.exports = React.createClass({
 				errors: err
 		})
 		if(_.isEmpty(err)){
-				var user = new UserModel({
+				console.log(this.props.user);
+				var user = this.props.user
+				 user.set({
 					username: this.refs.email.getDOMNode().value,
 					password: this.refs.pass.getDOMNode().value,
 					email: this.refs.email.getDOMNode().value
-				})
+				});
 
 				user.save( 
 					{null},
 					{	success: function(UserModel){
 					 		console.log('user was added')
+					 		// self.props.router.navigate('profile', {trigger: true});
 						},
 					 	error: function(UserModel, response){
 					 		console.log('user was not added', response.responseJSON)

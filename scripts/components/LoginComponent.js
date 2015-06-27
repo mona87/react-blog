@@ -1,5 +1,4 @@
 var React = require('react');
-var UserModel = require('../models/UserModel');
 var _ = require('backbone/node_modules/underscore');
 
 module.exports = React.createClass({
@@ -15,13 +14,11 @@ module.exports = React.createClass({
 		return(
 			<form onSubmit = {this.submit}>
 			<h1>Login</h1>
-				<div style={divStyle} ref="error1">{this.state.errors.parseError}</div>
+				<div style={divStyle} ref="error1">{this.state.errors}</div>
 				<label> Username</label><br/>
 				<input ref="user"  type="text" placeholder="enter username" /><br/>
-				<div style={divStyle} ref="error1">{this.state.errors.username}</div>
 				<label> Password</label><br/>			
 				<input ref="pw" type="text" placeholder="enter password" /><br/>
-				<div style={divStyle} ref="error1">{this.state.errors.password}</div>
 				<button>Submit</button>
 			</form>
 
@@ -31,7 +28,7 @@ module.exports = React.createClass({
 		e.preventDefault();
 		var self = this;
 
-		var user = new UserModel();
+		
 		var err = {}
 		var username = this.refs.user.getDOMNode().value;
 		var password = this.refs.pw.getDOMNode().value;
@@ -42,35 +39,34 @@ module.exports = React.createClass({
 		else if (!password){
 			err.password = 'Please enter a password'
 		}
-		else if(_.isEmpty(err)){
-			user.login({
-				username: username,
+		this.setState({
+			errors: err
+		})
+		if(_.isEmpty(err)){
+
+			var user = this.props.user;
+
+			user.login(
+			{	username: username,
 				password: password
 			},
 			{
 				success: function(usermodel){
-					console.log('user logged in')
-
+					console.log('user logged in');
+					self.props.router.navigate('profile', {trigger: true});
 				},
 				error: function(usermodel, response){
-					 console.log('user was not logged in', response.responseJSON)
-					 err.parseError = response.responseJSON.error
+					 console.log('user was not logged in', response.responseJSON.error)
 					 self.setState ({
-					 	errors: err
+					 	errors: response.responseJSON.error
 					 })
-
+				
 				}
-		})
+			});
 
 		}
-		this.setState({
-			errors: err
-		})
+	
 
 		
 	}
-
-
-
-
 })

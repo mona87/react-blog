@@ -1,33 +1,57 @@
 var React = require('react');
 var RegisterPage = require('./components/RegisterComponent');
 var LoginPage = require('./components/LoginComponent');
-var Backbone = require('backparse')({
-	appId: 'SNLAJ6G7wviQikGW1xcVmn5s3rUZvDsbzoS0xiwZ',
-	apiKey: '3FfrVV8MXHvsLPkjMH466udET6rfzPvo6vCMkyHB',
-	apiVersion: 1
-});
+var ProfilePage = require('./components/ProfileComponent');
+var PostPage = require('./components/PostPage');
+var PostListPage = require('./components/PostListPage')
+var Backbone = require('backparse')(require('./config/parseSettings'));
+var UserModel = require('./models/UserModel');
+
+var user = new UserModel();
+
 
 var App = Backbone.Router.extend({
 	routes:{
 		'': 		'register',
 		'login':    'login',
-		'register':  'register'
+		'register':  'register',
+		'profile':   'profile',
+		'post': 	  'post',
+		'postlist':  'postlist'
 	},
 
-	home: function(){
-		console.log('home');
+	postlist: function(){
+		console.log('postlist')
+		React.render(
+			<PostListPage/>,
+			document.getElementById('container')
+		)
+	},
+	post: function (){
+		console.log('post');
+		React.render(
+			<PostPage />,
+			document.getElementById('container')
+		);
+	},
+	profile: function(){
+		console.log('profile');
+		React.render(
+			<ProfilePage/>,
+			document.getElementById('container')
+		);
 	},
 	register: function(){
 		console.log('register');
 		React.render(
-		<RegisterPage/>,
+		<RegisterPage user={user} router={app}/>,
 		document.getElementById('container')
 		);
 	},
 	login: function() {
 		console.log('login');
 		React.render(
-		<LoginPage/>,
+		<LoginPage user={user} router={app}/>,
 		document.getElementById('container')
 		);
 	}

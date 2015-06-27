@@ -33472,8 +33472,18 @@ module.exports = require('./lib/React');
 },{}],162:[function(require,module,exports){
 'use strict';
 
+var Backbone = require('backparse')(require('../config/parseSettings'));
+var BlogPostModel = require('../models/BlogPostModel');
+
+module.exports = Backbone.Collection.extend({
+	model: BlogPostModel,
+	parseClassName: 'post'
+});
+
+},{"../config/parseSettings":168,"../models/BlogPostModel":170,"backparse":3}],163:[function(require,module,exports){
+'use strict';
+
 var React = require('react');
-var UserModel = require('../models/UserModel');
 var _ = require('backbone/node_modules/underscore');
 
 module.exports = React.createClass({
@@ -33499,7 +33509,7 @@ module.exports = React.createClass({
 			React.createElement(
 				'div',
 				{ style: divStyle, ref: 'error1' },
-				this.state.errors.parseError
+				this.state.errors
 			),
 			React.createElement(
 				'label',
@@ -33510,11 +33520,6 @@ module.exports = React.createClass({
 			React.createElement('input', { ref: 'user', type: 'text', placeholder: 'enter username' }),
 			React.createElement('br', null),
 			React.createElement(
-				'div',
-				{ style: divStyle, ref: 'error1' },
-				this.state.errors.username
-			),
-			React.createElement(
 				'label',
 				null,
 				' Password'
@@ -33522,11 +33527,6 @@ module.exports = React.createClass({
 			React.createElement('br', null),
 			React.createElement('input', { ref: 'pw', type: 'text', placeholder: 'enter password' }),
 			React.createElement('br', null),
-			React.createElement(
-				'div',
-				{ style: divStyle, ref: 'error1' },
-				this.state.errors.password
-			),
 			React.createElement(
 				'button',
 				null,
@@ -33538,7 +33538,6 @@ module.exports = React.createClass({
 		e.preventDefault();
 		var self = this;
 
-		var user = new UserModel();
 		var err = {};
 		var username = this.refs.user.getDOMNode().value;
 		var password = this.refs.pw.getDOMNode().value;
@@ -33547,31 +33546,234 @@ module.exports = React.createClass({
 			err.username = 'Please enter a username';
 		} else if (!password) {
 			err.password = 'Please enter a password';
-		} else if (_.isEmpty(err)) {
-			user.login({
-				username: username,
-				password: password
-			}, {
-				success: function success(usermodel) {
-					console.log('user logged in');
-				},
-				error: function error(usermodel, response) {
-					console.log('user was not logged in', response.responseJSON);
-					err.parseError = response.responseJSON.error;
-					self.setState({
-						errors: err
-					});
-				}
-			});
 		}
 		this.setState({
 			errors: err
 		});
+		if (_.isEmpty(err)) {
+
+			var user = this.props.user;
+
+			user.login({ username: username,
+				password: password
+			}, {
+				success: function success(usermodel) {
+					console.log('user logged in');
+					self.props.router.navigate('profile', { trigger: true });
+				},
+				error: function error(usermodel, response) {
+					console.log('user was not logged in', response.responseJSON.error);
+					self.setState({
+						errors: response.responseJSON.error
+					});
+				}
+			});
+		}
 	}
+});
+
+},{"backbone/node_modules/underscore":2,"react":160}],164:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var PostCollection = require('../collections/PostCollection');
+
+module.exports = React.createClass({
+	displayName: 'exports',
+
+	getInitialState: function getInitialState() {
+		var posts = new PostCollection();
+		var self = this;
+
+		var q = {};
+		if (this.props.category) {
+			q.category = this.props.category;
+		}
+		posts.fetch({
+			// query: {
+			// 	// // category: 'js'
+			// 	// title: {
+			// 	// 	// $regex: '.*first.*'
+			// 	// }
+			// },
+			success: function success() {
+				self.forceUpdate();
+				// 	posts.on('add', fucntion(){
+				// 		self.forceUpdate();
+				// });
+			}
+		});
+
+		return {
+			posts: posts
+		};
+	},
+	render: function render() {
+		var postEls = this.state.posts.map(function (postModel) {
+			return React.createElement(
+				'div',
+				{ key: postModel.cid },
+				React.createElement(
+					'h3',
+					null,
+					postModel.get('title')
+				),
+				React.createElement(
+					'p',
+					null,
+					postModel.get('body')
+				),
+				React.createElement(
+					'p',
+					null,
+					postModel.get('category')
+				)
+			);
+		});
+		return React.createElement(
+			'div',
+			null,
+			postEls
+		);
+	}
+});
+
+},{"../collections/PostCollection":162,"react":160}],165:[function(require,module,exports){
+'use strict';
+
+var Backbone = require('backparse')(require('../config/parseSettings'));
+var React = require('react');
+var BlogPostModel = require('../models/BlogPostModel');
+
+module.exports = React.createClass({
+	displayName: 'exports',
+
+	render: function render() {
+		var divStyle = {
+			color: 'red'
+		};
+		return React.createElement(
+			'form',
+			{ onSubmit: this.addPost },
+			React.createElement(
+				'h1',
+				null,
+				'Blog Post'
+			),
+			React.createElement('div', { style: divStyle, ref: 'error' }),
+			React.createElement(
+				'label',
+				null,
+				'Title'
+			),
+			React.createElement('br', null),
+			React.createElement('input', { ref: 'title', type: 'text' }),
+			React.createElement('br', null),
+			React.createElement(
+				'label',
+				null,
+				'Body'
+			),
+			React.createElement('br', null),
+			React.createElement('textarea', { ref: 'body' }),
+			React.createElement('br', null),
+			React.createElement(
+				'label',
+				null,
+				'Category'
+			),
+			React.createElement('br', null),
+			React.createElement(
+				'select',
+				{ ref: 'cat' },
+				React.createElement(
+					'option',
+					{ value: '1' },
+					' -- select an option -- '
+				),
+				React.createElement(
+					'option',
+					null,
+					'Animals'
+				),
+				React.createElement(
+					'option',
+					null,
+					'Movies'
+				),
+				React.createElement(
+					'option',
+					null,
+					'Sports'
+				)
+			),
+			React.createElement('br', null),
+			React.createElement(
+				'button',
+				null,
+				'Submit'
+			)
+		);
+	},
+	addPost: function addPost(e) {
+		e.preventDefault();
+		var post = new BlogPostModel();
+		post.set({
+			title: this.refs.title.getDOMNode().value,
+			body: this.refs.body.getDOMNode().value,
+			category: this.refs.cat.getDOMNode().value
+		});
+		console.log(this.refs.cat.getDOMNode().value);
+
+		if (post.isValid()) {
+			console.log('valid');
+			this.refs.error.getDOMNode().innerHTML = '';
+
+			post.save({
+				'null': null
+			}, { success: function success(post) {
+					console.log(post);
+					console.log('post added');
+				},
+				error: function error(UserModel, response) {
+					console.log(response);
+				}
+			});
+		} else {
+			console.log(post.validationError);
+			this.refs.error.getDOMNode().innerHTML = post.validationError;
+		}
+	}
+});
+
+},{"../config/parseSettings":168,"../models/BlogPostModel":170,"backparse":3,"react":160}],166:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var UserModel = require('../models/UserModel');
+
+module.exports = React.createClass({
+	displayName: 'exports',
+
+	render: function render() {
+		return React.createElement(
+			'h1',
+			null,
+			'Profile'
+		);
+	}
+	// onPicakAvatar: function(){
+	// 	var self = this;
+	// 	filepicker.pickAndStore({
+	// 		mimetype: "image/*"
+	// 	},
+	// 	{},
+	// 	)
+	// }
 
 });
 
-},{"../models/UserModel":165,"backbone/node_modules/underscore":2,"react":160}],163:[function(require,module,exports){
+},{"../models/UserModel":171,"react":160}],167:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -33679,7 +33881,9 @@ module.exports = React.createClass({
 			errors: err
 		});
 		if (_.isEmpty(err)) {
-			var user = new UserModel({
+			console.log(this.props.user);
+			var user = this.props.user;
+			user.set({
 				username: this.refs.email.getDOMNode().value,
 				password: this.refs.pass.getDOMNode().value,
 				email: this.refs.email.getDOMNode().value
@@ -33701,51 +33905,95 @@ module.exports = React.createClass({
 	}
 
 });
+// self.props.router.navigate('profile', {trigger: true});
 
-},{"../models/UserModel":165,"backbone/node_modules/underscore":2,"react":160,"validator":161}],164:[function(require,module,exports){
+},{"../models/UserModel":171,"backbone/node_modules/underscore":2,"react":160,"validator":161}],168:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+	appId: 'SNLAJ6G7wviQikGW1xcVmn5s3rUZvDsbzoS0xiwZ',
+	apiKey: '3FfrVV8MXHvsLPkjMH466udET6rfzPvo6vCMkyHB',
+	apiVersion: 1
+};
+
+},{}],169:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
 var RegisterPage = require('./components/RegisterComponent');
 var LoginPage = require('./components/LoginComponent');
-var Backbone = require('backparse')({
-	appId: 'SNLAJ6G7wviQikGW1xcVmn5s3rUZvDsbzoS0xiwZ',
-	apiKey: '3FfrVV8MXHvsLPkjMH466udET6rfzPvo6vCMkyHB',
-	apiVersion: 1
-});
+var ProfilePage = require('./components/ProfileComponent');
+var PostPage = require('./components/PostPage');
+var PostListPage = require('./components/PostListPage');
+var Backbone = require('backparse')(require('./config/parseSettings'));
+var UserModel = require('./models/UserModel');
+
+var user = new UserModel();
 
 var App = Backbone.Router.extend({
 	routes: {
 		'': 'register',
 		'login': 'login',
-		'register': 'register'
+		'register': 'register',
+		'profile': 'profile',
+		'post': 'post',
+		'postlist': 'postlist'
 	},
 
-	home: function home() {
-		console.log('home');
+	postlist: function postlist() {
+		console.log('postlist');
+		React.render(React.createElement(PostListPage, null), document.getElementById('container'));
+	},
+	post: function post() {
+		console.log('post');
+		React.render(React.createElement(PostPage, null), document.getElementById('container'));
+	},
+	profile: function profile() {
+		console.log('profile');
+		React.render(React.createElement(ProfilePage, null), document.getElementById('container'));
 	},
 	register: function register() {
 		console.log('register');
-		React.render(React.createElement(RegisterPage, null), document.getElementById('container'));
+		React.render(React.createElement(RegisterPage, { user: user, router: app }), document.getElementById('container'));
 	},
 	login: function login() {
 		console.log('login');
-		React.render(React.createElement(LoginPage, null), document.getElementById('container'));
+		React.render(React.createElement(LoginPage, { user: user, router: app }), document.getElementById('container'));
 	}
 });
 
 var app = new App();
 Backbone.history.start();
 
-},{"./components/LoginComponent":162,"./components/RegisterComponent":163,"backparse":3,"react":160}],165:[function(require,module,exports){
+},{"./components/LoginComponent":163,"./components/PostListPage":164,"./components/PostPage":165,"./components/ProfileComponent":166,"./components/RegisterComponent":167,"./config/parseSettings":168,"./models/UserModel":171,"backparse":3,"react":160}],170:[function(require,module,exports){
 'use strict';
 
-var Backbone = require('backparse')({
-    appId: 'SNLAJ6G7wviQikGW1xcVmn5s3rUZvDsbzoS0xiwZ',
-    apiKey: '3FfrVV8MXHvsLPkjMH466udET6rfzPvo6vCMkyHB',
-    apiVersion: 1
+var Backbone = require('backparse')(require('../config/parseSettings'));
+
+module.exports = Backbone.Model.extend({
+	defaults: {
+		title: '',
+		body: '',
+		category: ''
+	},
+	parseClassName: 'Post',
+	idAttribute: 'objectID',
+	validate: function validate(attr) {
+		if (!attr.title) {
+			return 'A title is required';
+		} else if (!attr.body) {
+			return 'A body is required';
+		} else if (attr.category === '1') {
+			return 'A category is required';
+		}
+	}
+
 });
-Backbone.$ = require('jquery');
+
+},{"../config/parseSettings":168,"backparse":3}],171:[function(require,module,exports){
+'use strict';
+
+var Backbone = require('backparse')(require('../config/parseSettings'));
 
 module.exports = Backbone.Model.extend({
     defaults: {
@@ -33758,7 +34006,7 @@ module.exports = Backbone.Model.extend({
     isUser: true
 });
 
-},{"backparse":3,"jquery":5}]},{},[164])
+},{"../config/parseSettings":168,"backparse":3}]},{},[169])
 
 
 //# sourceMappingURL=all.js.map
