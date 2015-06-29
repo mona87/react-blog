@@ -12,15 +12,17 @@ module.exports = React.createClass({
           color: 'red'
       	}
 		return(
-			<form onSubmit = {this.submit}>
+			<div className="formHolder">
+			<form className="login" onSubmit = {this.submit}>
 			<h1>Login</h1>
 				<div style={divStyle} ref="error1">{this.state.errors}</div>
 				<label> Username</label><br/>
 				<input ref="user"  type="text" placeholder="enter username" /><br/>
 				<label> Password</label><br/>			
-				<input ref="pw" type="text" placeholder="enter password" /><br/>
+				<input ref="pw" type="password" placeholder="enter password" /><br/>
 				<button>Submit</button>
 			</form>
+			</div>
 
 		);
 	},
@@ -53,7 +55,11 @@ module.exports = React.createClass({
 			{
 				success: function(usermodel){
 					console.log('user logged in');
-					self.props.router.navigate('profile', {trigger: true});
+					console.log(usermodel);
+					// localStorage.setItem('id', usermodel.attributes.objectId)
+					 localStorage.setItem('username', usermodel.attributes.username)
+					// localStorage.setItem('sessionToken', usermodel.attributes.sessionToken)
+					self.props.router.navigate('postlist', {trigger: true});
 				},
 				error: function(usermodel, response){
 					 console.log('user was not logged in', response.responseJSON.error)

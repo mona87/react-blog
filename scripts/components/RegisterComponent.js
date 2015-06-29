@@ -14,19 +14,24 @@ module.exports = React.createClass({
 			color: 'red'
 		}
 		return(
-			<div>
-				<form onSubmit = {this.submit}>
+			<div className="postHolder">
+				<form className="register" onSubmit = {this.submit}>
 					<h1>Register</h1>
 					<div style={divStyle}>{this.state.errors.parseError}</div>
-					<label>Email</label><br/>
-					<input ref="email" type="text" placeholder="enter email"/><br/>
+					<div style={divStyle}>{this.state.errors.user}</div>
+					<label>Username</label><br/>
+					<input ref="user" type="text" placeholder="enter username"/><br/>	
 					<div style={divStyle}>{this.state.errors.email}</div>
-					<label>Password</label><br/>
-					<input  ref="pass" type="text" placeholder="enter password"/><br/>
+					<label>Email</label><br/>
+					<input ref="email" type="text" placeholder="enter email"/><br/>			
 					<div style={divStyle}>{this.state.errors.password}</div>
-					<label>Confirm Password</label><br/>
-					<input  ref="pass2" type="text" placeholder="enter password"/><br/>
+					<label>Password</label><br/>
+					<input  ref="pass" type="password" placeholder="enter password"/><br/>
+					
 					<div style={divStyle}>{this.state.errors.password2}</div>
+					<label>Confirm Password</label><br/>
+					<input  ref="pass2" type="password" placeholder="enter password"/><br/>
+					
 					<button>Submit</button>
 				</form>
 			</div>
@@ -43,8 +48,12 @@ module.exports = React.createClass({
 		var email = this.refs.email.getDOMNode().value;
 		var password = this.refs.pass.getDOMNode().value;
 		var password2 = this.refs.pass2.getDOMNode().value;
+		var user = this.refs.user.getDOMNode().value;
 
-		if(!email){
+		if(!user){
+			err.user = "Please enter a username"
+		}
+		else if(!email){
 			err.email = "Please enter an email address";
 		}
 		else if(!validator.isEmail(email)){
@@ -66,7 +75,7 @@ module.exports = React.createClass({
 				console.log(this.props.user);
 				var user = this.props.user
 				 user.set({
-					username: this.refs.email.getDOMNode().value,
+					username: this.refs.user.getDOMNode().value,
 					password: this.refs.pass.getDOMNode().value,
 					email: this.refs.email.getDOMNode().value
 				});
@@ -75,7 +84,7 @@ module.exports = React.createClass({
 					{null},
 					{	success: function(UserModel){
 					 		console.log('user was added')
-					 		// self.props.router.navigate('profile', {trigger: true});
+					 	 	self.props.router.navigate('postlist', {trigger: true});
 						},
 					 	error: function(UserModel, response){
 					 		console.log('user was not added', response.responseJSON)

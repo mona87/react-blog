@@ -1,48 +1,33 @@
 var React = require('react');
 var PostCollection = require('../collections/PostCollection');
+// var Backbone = require('backparse')(require('../config/parseSettings'));
 
 module.exports = React.createClass({
-	getInitialState: function(){
-		var posts = new PostCollection();
-		var self = this;
-
-		var q = {};
-		if (this.props.category){
-			q.category = this.props.category;
-		}
-		posts.fetch({
-			// query: {
-			// 	// // category: 'js'
-			// 	// title: {
-			// 	// 	// $regex: '.*first.*'
-			// 	// }
-			// },
-			success: function(){
-				self.forceUpdate();
-			// 	posts.on('add', fucntion(){
-			// 		self.forceUpdate();
-			// });
-			}
-		});
-
-		return{
-			posts: posts
-		}
-
+	componentDidMount: function(){
+		// this.forceUpdate();
 	},
 	render: function(){
-		var postEls = this.state.posts.map(function(postModel){
+
+		//this.props.user.attributes.sessionToken = sessionStorage.getItem('session')
+		console.log(this.props.user)
+
+		var postEls = this.props.posts.map(function(postModel){
 			return(
-					<div key={postModel.cid}>
-						<h3>{postModel.get('title')}</h3>
+					<div className="posts" key={postModel.cid}>
+						<h2>{postModel.get('title')}</h2>
+						<p><a href={'#category/' + postModel.get('category')}>{postModel.get('category')}</a> | {postModel.get('createdAt')}</p>
 						<p>{postModel.get('body')}</p>
-						<p>{postModel.get('category')}</p>
+						
 					</div>
 				);
 		});
 		return(
 			<div>
-				{postEls}
+				
+				<div className="postHolder" >
+					{postEls}
+				</div>
+			
 			</div>
 		);
 	}

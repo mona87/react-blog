@@ -4,7 +4,7 @@ var UserModel = require('../models/UserModel');
 module.exports = React.createClass({
 	render: function(){
 		return(
-			<h1>Profile</h1>
+			<h1>Home</h1>
 		)
 	}
 	// onPicakAvatar: function(){

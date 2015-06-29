@@ -3,5 +3,5 @@ var BlogPostModel = require('../models/BlogPostModel');
 
 module.exports = Backbone.Collection.extend({
 	model: BlogPostModel,
-	parseClassName: 'post'
+	parseClassName: 'Post'
 })

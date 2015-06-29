@@ -8,14 +8,12 @@ module.exports = React.createClass({
 			color: 'red'
 		}
 		return(
-			<form onSubmit = {this.addPost}>
+			<div className="postHolder">
+			<form className="blogpost" onSubmit = {this.addPost}>
 
-				<h1>Blog Post</h1>
+				<h1>New Post</h1>
 				<div style={divStyle} ref="error"></div>
-				<label>Title</label><br/>
-				<input ref="title" type="text"></input><br/>
-				<label>Body</label><br/>
-				<textarea ref="body"></textarea><br/>
+
 				<label>Category</label><br/>
 				<select ref="cat" >
 					<option value="1"> -- select an option -- </option>
@@ -23,13 +21,20 @@ module.exports = React.createClass({
 					<option>Movies</option>
 					<option>Sports</option>
 				</select><br/>
+				<label>Title</label><br/>
+				<input ref="title" type="text"></input><br/>
+				<label>Body</label><br/>
+				<textarea ref="body"></textarea><br/>
+				
 				<button>Submit</button>
 			</form>
+			</div>
 		);
 		
 	},
 	addPost: function(e){
 		e.preventDefault();
+		self = this;
 		var post = new BlogPostModel();
 		post.set({
 			title: this.refs.title.getDOMNode().value,
@@ -42,12 +47,11 @@ module.exports = React.createClass({
 			console.log('valid')
 			this.refs.error.getDOMNode().innerHTML = "";
 
-			post.save({
-					null
-				},
+			post.save({null},
 					{ success: function(post){
 						console.log(post);
-						console.log('post added');
+						// console.log('post added');
+						self.props.router.navigate('postlist', {trigger: true});
 					},
 					error: function(UserModel, response){
 						console.log(response)
