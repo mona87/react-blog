@@ -2,11 +2,17 @@ body, html{
 	background-color: #F9F2E7;
 	margin: 0;
 	font-family: 'Molengo', sans-serif;
+
+}
+
+body{
+
 }
 
 #container{
 	width: 100%;
 	height: auto;
+
 
 }
 
@@ -16,7 +22,7 @@ body, html{
 	color: white;
 	font-size: 20px;
 	width: 100%;
-	position: fixed;
+/*	position: fixed;*/
 	opacity: .9;
 	padding-left: 50px;
 	padding-top: 20px;
@@ -27,7 +33,7 @@ body, html{
 .nav a{
 	color: white;
 	text-decoration: none;
-	font-size: 16px;
+	font-size: 20px;
 	transition: 1000ms;
 }
 .nav a:hover{
@@ -45,7 +51,7 @@ body, html{
 .hero{
 	background-image: url('http://travelshows.com/files/Home%20Page%20Backgrounds/fiji.jpg');
 	width: 100%;
-	height: 400px;
+	height: 200px;
 	background-size: cover;
 }
 
@@ -178,8 +184,9 @@ body, html{
 
  .logout a:link, .logout a:visited{
 	text-decoration: none;
-	font-size: 16px;
+	font-size: 20px;
 	color: white;
+	margin-right: 20px;
 
 }
 .logout a:hover{
@@ -201,5 +208,13 @@ body, html{
 .category h1{
 	margin: 0;
 
+}
+
+.bg{
+	/*background-image: url();*/
+	background-size: cover;
+	background-repeat: no-repeat;
+	height: 100%;
+	width: 100%;
 }
 

@@ -7,6 +7,7 @@ module.exports = React.createClass({
 		var divStyle = {
 			color: 'red'
 		}
+		// console.log('user id '+  );
 		return(
 			<div className="postHolder">
 			<form className="blogpost" onSubmit = {this.addPost}>
@@ -39,28 +40,30 @@ module.exports = React.createClass({
 		post.set({
 			title: this.refs.title.getDOMNode().value,
 			body: this.refs.body.getDOMNode().value,
-			category: this.refs.cat.getDOMNode().value
+			category: this.refs.cat.getDOMNode().value,
+			userID: this.props.user
+
 		})
-		console.log(this.refs.cat.getDOMNode().value);
+		// console.log(this.refs.cat.getDOMNode().value);
 
 		if(post.isValid()){
-			console.log('valid')
+			// console.log('valid')
 			this.refs.error.getDOMNode().innerHTML = "";
 
 			post.save({null},
 					{ success: function(post){
-						console.log(post);
+						// console.log(post);
 						// console.log('post added');
-						self.props.router.navigate('postlist', {trigger: true});
+						self.props.router.navigate('blog', {trigger: true});
 					},
 					error: function(UserModel, response){
-						console.log(response)
+						// console.log(response)
 					}
 				}
 			)
 		}
 		else{
-			console.log(post.validationError);
+			// console.log(post.validationError);
 			this.refs.error.getDOMNode().innerHTML = post.validationError;
 		}
 

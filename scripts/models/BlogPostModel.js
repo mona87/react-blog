@@ -7,7 +7,7 @@ module.exports = Backbone.Model.extend({
 		category: ''
 	},
 	parseClassName: 'Post',
-	idAttribute: 'objectID',
+	idAttribute: 'objectId',
 	validate: function(attr){
 		if(!attr.title){
 			return 'A title is required'
